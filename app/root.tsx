@@ -77,7 +77,7 @@ function Document({
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-gray-100">
         <Header user={data?.user} />
         {children}
         <ScrollRestoration />
