@@ -1,4 +1,4 @@
-import type { MetaFunction } from "remix";
+import { MetaFunction } from "remix";
 
 export let meta: MetaFunction = () => {
   return {
@@ -7,7 +7,6 @@ export let meta: MetaFunction = () => {
   };
 };
 
-// https://remix.run/guides/routing#index-routes
 export default function Index() {
   return (
     <div className="bg-green-500">

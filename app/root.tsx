@@ -1,16 +1,32 @@
 import {
+  Form,
+  Link,
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   ScrollRestoration,
   useCatch,
+  useLoaderData,
 } from "remix";
 import type { LinksFunction } from "remix";
 import styles from "./tailwind.css";
+import StyledLink from "./components/styledLink";
+import { User } from ".prisma/client";
+import { getUser } from "./utils/session.server";
 
 export let links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
+};
+
+type LoaderData = {
+  user: Omit<User, "passwordHash"> | null;
+};
+
+export let loader: LoaderFunction = async ({ request }) => {
+  const user = await getUser(request);
+  return { user };
 };
 
 export default function App() {
@@ -23,6 +39,58 @@ export default function App() {
   );
 }
 
+const Header = ({ user }: LoaderData) => {
+  return (
+    <header className="bg-gray-300 p-2 flex justify-between">
+      <h1 className="font-medium text-lg">Twitter Clone</h1>
+      {user ? (
+        <div className="flex justify-between gap-4 items-center">
+          <span className="text-gray-700">Logged in as: {user.username}</span>
+          <Form method="post" action="/logout">
+            <button className="hover:text-gray-500 font-medium" type="submit">
+              Logout
+            </button>
+          </Form>
+        </div>
+      ) : (
+        <StyledLink to="/login">Login</StyledLink>
+      )}
+    </header>
+  );
+};
+
+function Document({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) {
+  const data = useLoaderData<LoaderData>();
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        {title ? <title>{title}</title> : null}
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Header user={data?.user} />
+        {children}
+        <ScrollRestoration />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
+    </html>
+  );
+}
+
+function Layout({ children }: { children: React.ReactNode }) {
+  return <div className="m-8">{children}</div>;
+}
+
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
@@ -31,11 +99,6 @@ export function ErrorBoundary({ error }: { error: Error }) {
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
-          <hr />
-          <p>
-            Hey, developer, you should replace this with what you want your
-            users to see.
-          </p>
         </div>
       </Layout>
     </Document>
@@ -74,33 +137,4 @@ export function CatchBoundary() {
       </Layout>
     </Document>
   );
-}
-
-function Document({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title?: string;
-}) {
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {title ? <title>{title}</title> : null}
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {children}
-        <ScrollRestoration />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
-      </body>
-    </html>
-  );
-}
-
-function Layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
 }
