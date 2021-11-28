@@ -7,9 +7,10 @@ import {
   useCatch,
 } from "remix";
 import type { LinksFunction } from "remix";
+import styles from "./tailwind.css";
 
 export let links: LinksFunction = () => {
-  return [];
+  return [{ rel: "stylesheet", href: styles }];
 };
 
 export default function App() {

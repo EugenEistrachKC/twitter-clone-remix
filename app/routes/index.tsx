@@ -10,7 +10,7 @@ export let meta: MetaFunction = () => {
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
   return (
-    <div>
+    <div className="bg-green-500">
       <main>Hello World</main>
     </div>
   );
