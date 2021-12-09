@@ -6,6 +6,7 @@ import {
   LoaderFunction,
   Meta,
   Outlet,
+  Scripts,
   ScrollRestoration,
   useCatch,
   useLoaderData,
@@ -41,13 +42,13 @@ export default function App() {
 
 const Header = ({ user }: LoaderData) => {
   return (
-    <header className="bg-gray-300 p-2 flex justify-between">
-      <h1 className="font-medium text-lg">Twitter Clone</h1>
+    <header className="flex justify-between p-2 bg-gray-300">
+      <h1 className="text-lg font-medium">Twitter Clone</h1>
       {user ? (
-        <div className="flex justify-between gap-4 items-center">
+        <div className="flex items-center justify-between gap-4">
           <span className="text-gray-700">Logged in as: {user.username}</span>
           <Form method="post" action="/logout">
-            <button className="hover:text-gray-500 font-medium" type="submit">
+            <button className="font-medium hover:text-gray-500" type="submit">
               Logout
             </button>
           </Form>
@@ -81,6 +82,7 @@ function Document({
         <Header user={data?.user} />
         {children}
         <ScrollRestoration />
+        <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
